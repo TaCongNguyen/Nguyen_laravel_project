@@ -11,7 +11,7 @@
             </div>
             <div class="container-fluid col-lg-12" >
                 <form method="POST" enctype="multipart/form-data">
-                    {{$row}}
+
                     @if (count($errors->all())>0)
                         <div class="alert alert-danger text-center">
                             @foreach ($errors->all() as $error )
@@ -36,7 +36,7 @@
                         <label for="category_id" class="col-sm-2 col-form-label">Post Category</label>
                         <div class="col-sm-10">
                             <select id="category_id" name="category_id" class="form-control">
-                                <option>--Select a Category--</option>
+                                <option value="{{$row->category_id}}">{{$category->category}}</option>
                             </select>
                         </div>
                     </div>
@@ -45,7 +45,11 @@
                     <h4>Post Content</h4>
                     <textarea id="summernote" name=content>{{$row->content}}</textarea>
                     <input class="btn btn-primary " type="submit" value="Save">
+                    <a href="{{url('admin/posts')}}">
+                        <input class="btn btn-success " type="button" style="float: right; margin-top:0" value="Back">
+                    </a>
                 </form>
+
             </div>
             <hr />
 

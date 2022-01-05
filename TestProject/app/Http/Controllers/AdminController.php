@@ -30,7 +30,7 @@ class AdminController extends Controller
                     $path= $req->file('file')->store('/',['disk'=>'my_disk']);
 
                     $data['title']=$req->input('title');
-                    $data['category_id']=1;
+                    $data['category_id']=$req->input('category_id');
                     $data['image']=$path;
                     $data['content']=$req->input('content');
                     $data['created_at']=date("Y-m-d H:i:s");
@@ -44,11 +44,37 @@ class AdminController extends Controller
             // sửa dữ liệu
             case 'edit':
                 $post =new Post();
-                $row=$post->find($id);
+                 if($req->method()=='POST'){
 
+                    $validated=$req->validate([
+                        'title'=>'required|string',
+                        'file'=>'image',
+                        'content'=>'required'
+                    ]);
+                    if($req->file('file'))
+                    {
+                        $oldrow=$post->find($id);
+                        if(file_exists('uploads/'.$oldrow->image)){
+                            unlink('uploads/'.$oldrow->image);
+                        };
+                        $path= $req->file('file')->store('/',['disk'=>'my_disk']);
+                        $data['image']=$path;
+                    }
+                    $data['id']=$id;
+                    $data['title']=$req->input('title');
+                    $data['category_id']=$req->input('category_id');
+                    $data['content']=$req->input('content');
+                    $data['updated_at']=date("Y-m-d H:i:s");
+
+                    $post->where('id',$id)->update($data);
+                    return redirect('admin/posts/edit/'.$id);
+                }
+                $row=$post->find($id);
+                $category= $row->category()->first();
                 return view('admin.edit_post',[
                     'page_title'=>'Edit Post',
                     'row'=>$row,
+                    'category'=>$category
                 ]);
                 break;
             //xoá dữ liệu

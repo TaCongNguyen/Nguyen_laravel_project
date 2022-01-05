@@ -19,7 +19,12 @@
                 <tbody>
                     @if ($rows)
                         @foreach ( $rows as $row )
-                            <tr><td>{{$row->title}}</td><td><?= $row->content ?></td><td>{{$row->category}}</td><td><img src="{{url('uploads/'.$row->image)}}" style="width: 150px"/></td><td>{{$row->created_at}}</td><td>Edit | Delete</td></tr>
+                            <tr><td>{{$row->title}}</td><td><?= $row->content ?></td><td>{{$row->category}}</td><td><img src="{{url('uploads/'.$row->image)}}" style="width: 150px"/></td><td>{{$row->created_at}}</td>
+                                <td>
+                                    <a href="{{url('admin/posts/edit/'.$row->id)}}"><button class="btn btn-sm btn-success"><i class="fa fa-edit"></i>Edit</button></a>
+                                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash-times"></i>Delete</button>
+                                </td>
+                            </tr>
                         @endforeach
                     @endif
                 </tbody>
