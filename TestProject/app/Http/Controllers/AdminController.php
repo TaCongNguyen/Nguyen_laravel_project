@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models;
+use App\Models\Category;
 use App\Models\Post;
 
 class AdminController extends Controller
@@ -15,7 +16,7 @@ class AdminController extends Controller
     }
     /* Trang Post */
     public function posts(Request $req, $type='',$id=''){
-        $page_title="Posts";
+
         switch($type){
             //add dữ liệu
             case 'add':
@@ -36,7 +37,7 @@ class AdminController extends Controller
                     $data['created_at']=date("Y-m-d H:i:s");
                     $data['updated_at']=date("Y-m-d H:i:s");
                     $post->insert($data);
-
+                    return redirect('admin/posts');
 
                 }
                 return view('admin.add_post',['page_title'=>'New Post']);
@@ -79,9 +80,20 @@ class AdminController extends Controller
                 break;
             //xoá dữ liệu
             case 'delete':
-                return view('admin.posts',['page_title'=>'Delete Post']);
-                break;
+                $post =new Post();
+                $row=$post->find($id);
 
+                if($req->method()=='POST'){
+                    $row->delete();
+                   return redirect('admin/posts');
+               }
+
+               return view('admin.delete_post',[
+                   'page_title'=>'Delete [post]',
+                   'row'=>$row,
+
+               ]);
+               break;
             default:
                 //$post =new Post();
                // $rows=$post->all();
@@ -98,17 +110,155 @@ class AdminController extends Controller
     /* End Trang Post */
 
     /* Trang Categories */
-    public function categories(Request $req){
-        $page_title="Categories";
-        return view('admin.admin',['page_title'=>$page_title]);
+    public function categories(Request $req, $type='',$id=''){
+        switch($type){
+            //add dữ liệu
+            case 'add':
+                if($req->method()=='POST'){
+                    $category =new Category();
+                    $validated=$req->validate([
+                        'category'=>'required|string',
 
+                    ]);
+
+                    $data['category']=$req->input('category');
+                    $data['created_at']=date("Y-m-d H:i:s");
+                    $data['updated_at']=date("Y-m-d H:i:s");
+                    $category->insert($data);
+                    return redirect('admin/categories');
+
+                }
+                return view('admin.add_category',['page_title'=>'New category']);
+                break;
+            // sửa dữ liệu
+            case 'edit':
+                $category =new Category();
+                 if($req->method()=='POST'){
+
+                    $validated=$req->validate([
+                        'category'=>'required|string',
+
+                    ]);
+
+                    $data['id']=$id;
+                    $data['category']=$req->input('category');
+
+                    $data['updated_at']=date("Y-m-d H:i:s");
+
+                    $category->where('id',$id)->update($data);
+                    return redirect('admin/categories/edit/'.$id);
+                }
+                $row=$category->find($id);
+
+                return view('admin.edit_category',[
+                    'page_title'=>'Edit category',
+                    'row'=>$row,
+
+                ]);
+                break;
+            //xoá dữ liệu
+            case 'delete':
+                $category =new Category();
+                $row=$category->find($id);
+
+                if($req->method()=='POST'){
+                    $row->delete();
+                   return redirect('admin/categories');
+               }
+
+               return view('admin.delete_category',[
+                   'page_title'=>'Delete category',
+                   'row'=>$row,
+
+               ]);
+               break;
+            default:
+                //$post =new Post();
+               // $rows=$post->all();
+                $query="select *from categories order by id desc";
+                $rows=DB::select($query);
+                $data['rows']=$rows;
+                $data['page_title']='Categories';
+
+                return view('admin.categories',$data);
+                break;
+        }
     }
     /* End trang Categories */
 
     /* Trang user */
-    public function users(Request $req){
-        $page_title="Users";
-        return view('admin.admin',['page_title'=>$page_title]);
+    public function users(Request $req, $type='',$id=''){
+        switch($type){
+            //add dữ liệu
+            case 'add':
+                if($req->method()=='POST'){
+                    $category =new Category();
+                    $validated=$req->validate([
+                        'category'=>'required|string',
+
+                    ]);
+
+                    $data['category']=$req->input('category');
+                    $data['created_at']=date("Y-m-d H:i:s");
+                    $data['updated_at']=date("Y-m-d H:i:s");
+                    $category->insert($data);
+                    return redirect('admin/categories');
+
+                }
+                return view('admin.add_category',['page_title'=>'New category']);
+                break;
+            // sửa dữ liệu
+            case 'edit':
+                $category =new Category();
+                 if($req->method()=='POST'){
+
+                    $validated=$req->validate([
+                        'category'=>'required|string',
+
+                    ]);
+
+                    $data['id']=$id;
+                    $data['category']=$req->input('category');
+
+                    $data['updated_at']=date("Y-m-d H:i:s");
+
+                    $category->where('id',$id)->update($data);
+                    return redirect('admin/categories/edit/'.$id);
+                }
+                $row=$category->find($id);
+
+                return view('admin.edit_category',[
+                    'page_title'=>'Edit category',
+                    'row'=>$row,
+
+                ]);
+                break;
+            //xoá dữ liệu
+            case 'delete':
+                $category =new Category();
+                $row=$category->find($id);
+
+                if($req->method()=='POST'){
+                    $row->delete();
+                   return redirect('admin/categories');
+               }
+
+               return view('admin.delete_category',[
+                   'page_title'=>'Delete category',
+                   'row'=>$row,
+
+               ]);
+               break;
+            default:
+
+                $query="select *from users order by id desc";
+                $rows=DB::select($query);
+                $data['rows']=$rows;
+                $data['page_title']='User';
+
+                return view('admin.users',$data);
+                break;
+        }
     }
     /* End user */
     public function save(Request $req){
